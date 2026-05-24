@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EventPass | QR Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/mobile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0B1E3F; /* Midnight Blue */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .scanner-card {
+            background: white;
+            border-radius: 32px;
+            padding: 32px 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+        .scan-btn {
+            background: #2563eb;
+            color: white;
+            width: 100%;
+            padding: 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+        .scan-btn:active { transform: scale(0.96); }
+        .manual-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .manual-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+        }
+        #status-box {
+            display: none;
+            margin-top: 24px;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 14px;
+        }
+        .status-success { background: #ecfdf5; color: #059669; border: 1px solid #10b981; }
+        .status-error { background: #fef2f2; color: #dc2626; border: 1px solid #ef4444; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <div class="absolute top-8 left-6">
+        <a href="organizer.html" class="text-slate-400 hover:text-white transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i> Exit Scanner
+        </a>
+    </div>
+
+    <div class="scanner-card">
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-[#0B1E3F]">Scan QR Code</h1>
+            <p class="text-slate-400 text-sm mt-1">Verify participant entry</p>
+        </div>
+
+        <!-- Primary Action -->
+        <button id="startScan" class="scan-btn shadow-lg shadow-blue-500/30 mb-8">
+            <i class="fas fa-qrcode text-xl"></i>
+            Open Camera
+        </button>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-4 mb-8">
+            <div class="h-px bg-slate-100 flex-grow"></div>
+            <span class="text-slate-300 text-xs font-bold uppercase tracking-widest">OR</span>
+            <div class="h-px bg-slate-100 flex-grow"></div>
+        </div>
+
+        <!-- Manual Input -->
+        <div class="space-y-4">
+            <input type="text" id="manualId" placeholder="Enter User ID (e.g. 104)" class="manual-input">
+            <button id="submitManual" class="w-full bg-[#0B1E3F] text-white py-4 rounded-2xl font-bold text-sm">
+                Submit ID
+            </button>
+        </div>
+
+        <!-- Status Section -->
+        <div id="status-box"></div>
+    </div>
+
+    <script src="js/scanner.js"></script>
+    <script src="js/toast.js"></script>
+</body>
+</html>

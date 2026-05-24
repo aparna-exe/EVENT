@@ -1,0 +1,79 @@
+import cv2
+import sqlite3
+import os
+import re
+
+# Paths
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database", "eventpass.db")
+
+def scan_and_update_attendance(image_path):
+    """
+    Scans a QR code using OpenCV and updates the attendance in the database.
+    
+    This function fulfills the 'Attendance Link' task by:
+    1. Decoding the QR string to extract User_ID and Event_ID.
+    2. Connecting to the central eventpass.db.
+    3. Updating the REGISTRATION table to mark the user as 'Attended'.
+    """
+    
+    # 1. Decode the QR code using OpenCV
+    img = cv2.imread(image_path)
+    if img is None:
+        print(f"[ERROR] Image not found: {image_path}")
+        return False
+        
+    detector = cv2.QRCodeDetector()
+    data, bbox, _ = detector.detectAndDecode(img)
+    
+    if not data:
+        print("[ERROR] No QR data found.")
+        return False
+        
+    print(f"[INFO] Scanned Data: {data}")
+    
+    # 2. Extract IDs using Regex (Format: EP-REG-{user_id}-{event_id})
+    match = re.match(r"^EP-REG-(\d+)-(\d+)$", data)
+    if not match:
+        print(f"[ERROR] Invalid QR format: {data}")
+        return False
+        
+    user_id, event_id = match.groups()
+    
+    # 3. Update the Database
+    # This step links the physical scan to the digital registration record.
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        
+        # SQL Update Snippet
+        # We set Attendance_Status to 'Attended' and record the current timestamp.
+        # The WHERE clause ensures we update the specific registration for this user and event.
+        query = """
+        UPDATE REGISTRATION
+        SET Attendance_Status = 'Attended',
+            Scan_Time = CURRENT_TIMESTAMP
+        WHERE User_ID = ? AND Event_ID = ? AND Attendance_Status = 'Registered';
+        """
+        
+        cursor.execute(query, (user_id, event_id))
+        
+        if cursor.rowcount > 0:
+            conn.commit()
+            print(f"[SUCCESS] Attendance updated for User {user_id} at Event {event_id}.")
+            return True
+        else:
+            print(f"[WARN] No pending registration found for User {user_id} at Event {event_id}.")
+            return False
+            
+    except sqlite3.Error as e:
+        print(f"[ERROR] Database error: {e}")
+        return False
+    finally:
+        if 'conn' in locals():
+            conn.close()
+
+if __name__ == "__main__":
+    # Example usage:
+    # scan_and_update_attendance("qr_module/qr_images/qr_1_101.png")
+    pass

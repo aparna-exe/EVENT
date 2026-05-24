@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EventPass | Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/mobile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #0B1E3F; margin: 0; padding-bottom: 120px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .event-card { transition: transform 0.2s ease; }
+        .event-card:active { transform: scale(0.97); }
+    </style>
+</head>
+<body>
+
+    <nav class="sticky top-0 z-50 bg-[#0B1E3F] px-6 py-5 flex justify-between items-center">
+        <h1 class="text-white text-xl font-bold tracking-tight">EventPass</h1>
+        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white border-2 border-slate-700 overflow-hidden">
+            <i class="fas fa-user text-sm"></i>
+        </div>
+    </nav>
+
+    <div class="px-6 pt-2 pb-4">
+        <p class="text-slate-400 text-sm">Hello,</p>
+        <h1 id="user-greeting" class="text-white text-2xl font-bold">Explorer</h1>
+    </div>
+
+    <div class="px-6 mb-6">
+        <div class="relative">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"></i>
+            <input type="text" placeholder="Search events..." 
+                class="w-full bg-slate-800/40 border border-slate-700/50 text-white rounded-2xl py-3.5 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all placeholder:text-slate-500">
+        </div>
+    </div>
+
+    <div class="flex space-x-3 px-6 mb-8 overflow-x-auto no-scrollbar">
+        <button class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap">All</button>
+        <button class="bg-slate-800/60 text-slate-400 px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap">Workshops</button>
+        <button class="bg-slate-800/60 text-slate-400 px-6 py-2 rounded-full text-sm font-medium whitespace-nowrap">Tech Talks</button>
+    </div>
+
+    <main class="px-6 space-y-10">
+        <section>
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-white font-semibold text-lg">Upcoming Events</h2>
+                <button class="text-blue-400 text-sm font-medium">View All</button>
+            </div>
+            <div id="events" class="space-y-5">
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-blue-500 text-2xl mb-3"></i>
+                    <p class="text-slate-500 text-sm">Curating events for you...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="historySection" class="pt-2">
+            <div class="flex justify-between items-center mb-5">
+                <h2 class="text-white font-semibold text-lg">Your Registered Passes</h2>
+                <i class="fas fa-history text-slate-500 text-sm"></i>
+            </div>
+            <div id="registrationHistory" class="space-y-3">
+                <p class="text-slate-500 text-xs italic">Syncing registration logs...</p>
+            </div>
+        </section>
+    </main>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-[#0B1E3F]/80 backdrop-blur-xl border-t border-slate-800/50 px-10 py-5 flex justify-between items-center z-50">
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-blue-500 flex flex-col items-center">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-[10px] mt-1 font-medium">Home</span>
+        </button>
+        <a href="profile.html" class="text-slate-400 flex flex-col items-center">
+            <i class="fas fa-qrcode text-xl"></i>
+            <span class="text-[10px] mt-1 font-medium">My Pass</span>
+        </a>
+        <button onclick="document.getElementById('historySection').scrollIntoView({behavior: 'smooth'})" class="text-slate-400 flex flex-col items-center">
+            <i class="fas fa-calendar-check text-xl"></i>
+            <span class="text-[10px] mt-1 font-medium">History</span>
+        </button>
+    </div>
+
+    <script src="js/events.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const nameDisplay = document.getElementById('user-greeting');
+            const storedName = localStorage.getItem('username');
+            if (storedName && storedName !== "undefined") {
+                nameDisplay.textContent = storedName;
+            }
+        });
+    </script>
+    <script src="js/toast.js"></script>
+</body>
+</html>

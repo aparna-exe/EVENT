@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EventPass | Event Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/mobile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0B1E3F; /* Midnight Blue */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .content-card {
+            background: white;
+            border-radius: 32px 32px 0 0;
+            flex-grow: 1;
+            margin-top: 20px;
+            padding: 32px 24px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.2);
+        }
+        .sticky-footer {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 16px 24px 32px;
+            border-top: 1px solid #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Back Navigation -->
+    <div class="px-6 pt-8 pb-4 flex items-center">
+        <a href="dashboard.html" class="w-10 h-10 bg-slate-800/50 rounded-full flex items-center justify-center text-white mr-4">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <h2 class="text-white font-semibold">Event Details</h2>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="content-card">
+        <span class="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold uppercase mb-4 tracking-wider">
+            Featured Event
+        </span>
+        
+        <h1 id="eventTitle" class="text-2xl font-bold text-[#0B1E3F] leading-tight mb-6"></h1>
+
+        <div class="space-y-5 mb-8">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-blue-600 mr-4">
+                    <i class="far fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Date & Time</p>
+                    <p id="eventDate" class="text-sm font-semibold text-slate-700">May 10, 2026 • 10:00 AM</p>
+                </div>
+            </div>
+
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-red-500 mr-4">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Location</p>
+                    <p id="eventLocation" class="text-sm font-semibold text-slate-700">Dubai Knowledge Park, Hall A</p>
+                </div>
+            </div>
+
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-purple-500 mr-4">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-medium">Organizer</p>
+                    <p id="eventOrganizer" class="text-sm font-semibold text-slate-700">TechEvents Dubai</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-lg font-bold text-[#0B1E3F] mb-3">About Event</h3>
+        <p id="eventDescription" class="text-slate-500 text-sm leading-relaxed mb-10">
+            Join us for a day of high-stakes problem solving and technical innovation. 
+            This event focuses on the latest trends in embedded systems and 
+            real-time control. Perfect for engineering students looking to 
+            level up their hardware interfacing skills.
+        </p>
+    </div>
+
+    <!-- Sticky Register Button -->
+    <div class="sticky-footer">
+        <button id="confirmBtn" class="w-full bg-[#0B1E3F] text-white py-4 rounded-2xl font-bold shadow-xl shadow-blue-900/20 active:scale-95 transition-all">
+            Confirm Registration
+        </button>
+    </div>
+
+    <script src="js/register.js"></script>
+    <script>
+        // Use the event title from localStorage or set a default
+        document.getElementById("eventTitle").innerText = localStorage.getItem("event_title") || "Tech Fest 2026";
+    </script>
+    <script src="js/register.js"></script>
+    <script src="js/toast.js"></script>
+</body>
+</html>

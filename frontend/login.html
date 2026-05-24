@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EventPass | Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/mobile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #0B1E3F; display: flex; align-items: center; justify-content: center; min-height: 100dvh; padding: 24px 16px; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-white rounded-[2.5rem] w-full p-8 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col items-center mb-8">
+            <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/30 mb-4">
+                <span class="font-black tracking-tighter">EP</span>
+            </div>
+            <h1 class="text-[#0B1E3F] text-2xl font-bold">Welcome Back</h1>
+            <p class="text-slate-400 text-sm mt-1">Sign in to your EventPass account</p>
+        </div>
+
+        <div class="bg-slate-100 p-1.5 rounded-2xl flex mb-6">
+            <button id="btn-participant" type="button" class="w-1/2 bg-white text-[#0B1E3F] py-2.5 rounded-xl text-sm font-bold shadow-sm transition-all">Participant</button>
+            <button id="btn-organizer" type="button" class="w-1/2 text-slate-400 py-2.5 rounded-xl text-sm font-medium transition-all">Organizer</button>
+        </div>
+
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <input id="loginEmail" type="email" placeholder="Email Address" autocomplete="email"
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all placeholder:text-slate-400">
+            </div>
+            <div class="password-wrapper">
+                <input id="loginPassword" type="password" placeholder="Password" autocomplete="current-password"
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all placeholder:text-slate-400">
+                <button type="button" class="toggle-pw" id="pwToggle">&#128065;</button>
+            </div>
+
+            <div class="text-right">
+                <a href="#" class="text-blue-600 text-xs font-semibold">Forgot Password?</a>
+            </div>
+
+            <button id="loginBtn" type="submit" class="w-full bg-[#0B1E3F] text-white py-4 rounded-2xl font-bold text-sm hover:bg-blue-900 transition-all shadow-xl shadow-blue-950/10 mt-2">
+                Login
+            </button>
+        </form>
+
+        <p class="text-center text-slate-400 text-xs mt-8">New here? <a href="signup.html" class="text-blue-600 font-bold">Create Account</a></p>
+    </div>
+
+    <script src="js/toast.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        const pwInput = document.getElementById('loginPassword');
+        const pwToggle = document.getElementById('pwToggle');
+        pwToggle.addEventListener('click', () => {
+            const isHidden = pwInput.type === 'password';
+            pwInput.type = isHidden ? 'text' : 'password';
+            pwToggle.innerHTML = isHidden ? '&#128064;' : '&#128065;';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EventPass | Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/mobile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(180deg, #0B1E3F 0%, #142B5F 100%);
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100dvh; padding: 24px 16px;
+        }
+        .role-radio:checked + .role-option {
+            background: #ffffff; color: #0B1E3F;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-white rounded-[2rem] w-full p-8 shadow-2xl">
+        <div class="text-center mb-6">
+            <div class="bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/30 mx-auto mb-4">EP</div>
+            <h1 class="text-2xl font-bold text-slate-900">Create Account</h1>
+            <p class="text-slate-500 text-sm mt-1">Join the EventPass community</p>
+        </div>
+
+        <form id="signupForm">
+            <!-- Role Selection -->
+            <div class="flex bg-slate-100 p-1.5 rounded-2xl mb-5">
+                <input type="radio" name="role" id="role-participant" value="participant" class="role-radio hidden" checked>
+                <label for="role-participant" class="role-option flex-1 text-center py-2.5 text-sm rounded-xl cursor-pointer text-slate-400 transition-all">Participant</label>
+
+                <input type="radio" name="role" id="role-organizer" value="organizer" class="role-radio hidden">
+                <label for="role-organizer" class="role-option flex-1 text-center py-2.5 text-sm rounded-xl cursor-pointer text-slate-400 transition-all">Organizer</label>
+            </div>
+
+            <div class="relative mb-3">
+                <i class="far fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="name" placeholder="Full Name" autocomplete="name" required
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-11 pr-5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all placeholder:text-slate-400">
+            </div>
+
+            <div class="relative mb-3">
+                <i class="far fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="email" id="email" placeholder="Email Address" autocomplete="email" required
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-11 pr-5 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all placeholder:text-slate-400">
+            </div>
+
+            <div class="password-wrapper mb-4">
+                <i class="far fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);"></i>
+                <input type="password" id="password" placeholder="Password" autocomplete="new-password" required
+                    class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 pl-11 pr-12 text-sm outline-none focus:border-blue-500 focus:bg-white transition-all placeholder:text-slate-400">
+                <button type="button" class="toggle-pw" id="pwToggle">&#128065;</button>
+            </div>
+
+            <button type="submit" class="w-full bg-[#0B1E3F] text-white py-4 rounded-2xl font-bold text-sm hover:bg-blue-900 transition-all shadow-xl shadow-blue-950/10">
+                Create Account
+            </button>
+        </form>
+
+        <p class="text-center text-slate-500 text-xs mt-6">
+            Already have an account? <a href="login.html" class="text-blue-600 font-bold">Sign In</a>
+        </p>
+    </div>
+
+    <script src="js/toast.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        const pwInput = document.getElementById('password');
+        const pwToggle = document.getElementById('pwToggle');
+        pwToggle.addEventListener('click', () => {
+            const isHidden = pwInput.type === 'password';
+            pwInput.type = isHidden ? 'text' : 'password';
+            pwToggle.innerHTML = isHidden ? '&#128064;' : '&#128065;';
+        });
+    </script>
+</body>
+</html>
