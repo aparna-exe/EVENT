@@ -69,3 +69,148 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>`;
     }
 });
+
+// ── LIVE CAMERA SCANNER CONTROLS ──
+let html5QrcodeScanner = null;
+
+function toggleScanner() {
+    const scannerBox = document.getElementById('scannerContainer');
+    if (!scannerBox) return;
+    
+    if (scannerBox.classList.contains('hidden')) {
+        scannerBox.classList.remove('hidden');
+        startQRScanner();
+    } else {
+        scannerBox.classList.add('hidden');
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear().catch(err => console.error("Scanner clear error:", err));
+            html5QrcodeScanner = null;
+        }
+    }
+}
+
+function startQRScanner() {
+    html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+        fps: 15, 
+        qrbox: { width: 220, height: 220 } 
+    }, false);
+    
+    html5QrcodeScanner.render(onScanSuccess, onScanError);
+}
+
+async function onScanSuccess(decodedText) {
+    // Stop scanning and turn off camera immediately upon intercept
+    if (html5QrcodeScanner) {
+        await html5QrcodeScanner.clear();
+        html5QrcodeScanner = null;
+    }
+    document.getElementById('scannerContainer').classList.add('hidden');
+
+    let scannedUserId = null;
+    const currentEventId = localStorage.getItem('event_id');
+
+    // Robust Parsing: Handles raw comma separation ("user_id,event_id") or standard JSON object strings
+    try {
+        if (decodedText.trim().startsWith('{')) {
+            const parsedJson = JSON.parse(decodedText);
+            scannedUserId = parsedJson.user_id || parsedJson.User_ID;
+        } else {
+            const parts = decodedText.split(',');
+            scannedUserId = parts[0];
+        }
+    } catch (parseError) {
+        console.error("QR Code parsing breakdown:", parseError);
+        alert("Invalid format detected inside this QR Code format.");
+        return;
+    }
+
+    if (!scannedUserId) {
+        alert("Could not pull a valid User ID value from the scan data.");
+        return;
+    }
+
+    try {
+        // Dispatch clean fetch POST body sequence to your active backend routing rule
+        const response = await fetch('http://127.0.0.1:5000/mark_attendance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: parseInt(scannedUserId),
+                event_id: parseInt(currentEventId)
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(`Attendance status synchronized! Success! 🎉`);
+            window.location.reload(); // Instantly refreshes list row colors to match state changes!
+        } else {
+            alert(result.error || "Verification step dropped by backend.");
+        }
+    } catch (err) {
+        console.error("Networking connection loop failed:", err);
+        alert("Could not update attendance. Check server connection.");
+    }
+}
+
+function onScanError(err) {
+    // Silent fail to avoid flooding console tracking logs during video frames
+}
+
+// ── NEW DATA EXPORT LOGIC (Pasted at the bottom) ──
+async function exportAttendanceList() {
+    const eventId = localStorage.getItem('event_id');
+    const eventTitle = localStorage.getItem('event_title') || 'event_roster';
+    
+    if (!eventId) {
+        alert("Cannot export: Missing active event session data.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/get_event_attendees/${eventId}`);
+        if (!response.ok) throw new Error("Could not pull roster from backend server.");
+
+        const attendees = await response.json();
+
+        if (!attendees || attendees.length === 0) {
+            alert("Roster is currently empty. There is nothing to export yet!");
+            return;
+        }
+
+        // Generate CSV string
+        let csvContent = "Attendee Name,Email Address,Registration Date,Attendance Status\n";
+
+        attendees.forEach(person => {
+            const name = `"${(person.name || '').replace(/"/g, '""')}"`;
+            const email = `"${(person.email || '').replace(/"/g, '""')}"`;
+            const regDate = `"${(person.reg_date || '').replace(/"/g, '""')}"`;
+            const status = `"${(person.status || 'Registered').replace(/"/g, '""')}"`;
+
+            csvContent += `${name},${email},${regDate},${status}\n`;
+        });
+
+        // Trigger browser download mechanism
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        
+        const cleanTitle = eventTitle.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        downloadLink.setAttribute("download", `attendance_${cleanTitle}.csv`);
+        
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(url);
+
+    } catch (err) {
+        console.error("CSV Export Failure Tracking:", err);
+        alert("Failed to export attendee roster list.");
+    }
+}
+
+// Explicitly bind functions to the window object so inline HTML onclicks can find them instantly
+window.toggleScanner = toggleScanner;
+window.exportAttendanceList = exportAttendanceList;
