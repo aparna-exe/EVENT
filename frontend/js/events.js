@@ -13,31 +13,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!events || events.length === 0) {
             eventsContainer.innerHTML = `<p class="text-slate-500 text-center py-10">No events found today.</p>`;
         } else {
-            eventsContainer.innerHTML = events.map(event => `
-                <div class="event-card bg-white rounded-[2rem] p-6 shadow-xl shadow-black/30">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="pr-4">
-                            <h3 class="text-[#0B1E3F] text-xl font-bold leading-tight">${event.title}</h3>
-                            <p class="text-slate-400 text-xs mt-1 font-medium uppercase tracking-wider">EventPass Explorer</p>
+            eventsContainer.innerHTML = events.map(event => {
+                // Safely handle descriptions that might be missing or have tricky quotes
+                const safeDesc = (event.description || "Join us for this exciting event!").replace(/'/g, "\\'");
+                const safeTitle = event.title.replace(/'/g, "\\'");
+                const safeLocation = event.location.replace(/'/g, "\\'");
+
+                return `
+                    <div class="event-card bg-white rounded-[2rem] p-6 shadow-xl shadow-black/30">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="pr-4">
+                                <h3 class="text-[#0B1E3F] text-xl font-bold leading-tight">${event.title}</h3>
+                                <p class="text-slate-400 text-xs mt-1 font-medium uppercase tracking-wider">EventPass Explorer</p>
+                            </div>
+                            <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase">Open</div>
                         </div>
-                        <div class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-black uppercase">Open</div>
+                        <div class="space-y-2 mb-6">
+                            <div class="flex items-center text-slate-600 text-sm">
+                                <i class="far fa-calendar-alt w-5 text-blue-500"></i>
+                                <span class="ml-2">${event.date}</span>
+                            </div>
+                            <div class="flex items-center text-slate-600 text-sm">
+                                <i class="fas fa-map-marker-alt w-5 text-red-400"></i>
+                                <span class="ml-2">${event.location}</span>
+                            </div>
+                        </div>
+                        <button onclick="viewEvent(${event.id}, '${safeTitle}', '${safeLocation}', '${event.date}', '${safeDesc}')" 
+                                class="w-full bg-[#0B1E3F] text-white py-4 rounded-2xl font-bold text-sm hover:bg-[#142B5F] transition-all shadow-lg shadow-blue-900/20">
+                            Get Details
+                        </button>
                     </div>
-                    <div class="space-y-2 mb-6">
-                        <div class="flex items-center text-slate-600 text-sm">
-                            <i class="far fa-calendar-alt w-5 text-blue-500"></i>
-                            <span class="ml-2">${event.date}</span>
-                        </div>
-                        <div class="flex items-center text-slate-600 text-sm">
-                            <i class="fas fa-map-marker-alt w-5 text-red-400"></i>
-                            <span class="ml-2">${event.location}</span>
-                        </div>
-                    </div>
-                    <button onclick="viewEvent(${event.id}, '${event.title.replace(/'/g, "\\'")}', '${event.location}', '${event.date}')" 
-                            class="w-full bg-[#0B1E3F] text-white py-4 rounded-2xl font-bold text-sm hover:bg-[#142B5F] transition-all shadow-lg shadow-blue-900/20">
-                        Get Details
-                    </button>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
     } catch (error) {
         console.error("Error fetching available events:", error);
@@ -74,10 +81,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-function viewEvent(id, title, location, date) {
+// 🌟 FIXED: Passes and caches the dynamic description row variable
+function viewEvent(id, title, location, date, description) {
     localStorage.setItem("event_id", id);
     localStorage.setItem("event_title", title);
     localStorage.setItem("event_location", location);
     localStorage.setItem("event_date", date);
+    localStorage.setItem("event_description", description); 
     window.location.href = "event_details.html";
 }

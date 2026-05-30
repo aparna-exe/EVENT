@@ -36,7 +36,6 @@
 </head>
 <body>
 
-    <!-- Header / Back Navigation -->
     <div class="px-6 pt-8 pb-4 flex items-center">
         <a href="dashboard.html" class="w-10 h-10 bg-slate-800/50 rounded-full flex items-center justify-center text-white mr-4">
             <i class="fas fa-chevron-left"></i>
@@ -44,13 +43,12 @@
         <h2 class="text-white font-semibold">Event Details</h2>
     </div>
 
-    <!-- Main Content Card -->
     <div class="content-card">
         <span class="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-xs font-bold uppercase mb-4 tracking-wider">
             Featured Event
         </span>
         
-        <h1 id="eventTitle" class="text-2xl font-bold text-[#0B1E3F] leading-tight mb-6"></h1>
+        <h1 id="eventTitle" class="text-2xl font-bold text-[#0B1E3F] leading-tight mb-6">Loading Event...</h1>
 
         <div class="space-y-5 mb-8">
             <div class="flex items-center">
@@ -59,7 +57,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-slate-400 font-medium">Date & Time</p>
-                    <p id="eventDate" class="text-sm font-semibold text-slate-700">May 10, 2026 • 10:00 AM</p>
+                    <p id="eventDate" class="text-sm font-semibold text-slate-700">Loading date...</p>
                 </div>
             </div>
 
@@ -69,7 +67,7 @@
                 </div>
                 <div>
                     <p class="text-xs text-slate-400 font-medium">Location</p>
-                    <p id="eventLocation" class="text-sm font-semibold text-slate-700">Dubai Knowledge Park, Hall A</p>
+                    <p id="eventLocation" class="text-sm font-semibold text-slate-700">Loading location...</p>
                 </div>
             </div>
 
@@ -86,14 +84,10 @@
 
         <h3 class="text-lg font-bold text-[#0B1E3F] mb-3">About Event</h3>
         <p id="eventDescription" class="text-slate-500 text-sm leading-relaxed mb-10">
-            Join us for a day of high-stakes problem solving and technical innovation. 
-            This event focuses on the latest trends in embedded systems and 
-            real-time control. Perfect for engineering students looking to 
-            level up their hardware interfacing skills.
+            Loading description...
         </p>
     </div>
 
-    <!-- Sticky Register Button -->
     <div class="sticky-footer">
         <button id="confirmBtn" class="w-full bg-[#0B1E3F] text-white py-4 rounded-2xl font-bold shadow-xl shadow-blue-900/20 active:scale-95 transition-all">
             Confirm Registration
@@ -101,11 +95,18 @@
     </div>
 
     <script src="js/register.js"></script>
-    <script>
-        // Use the event title from localStorage or set a default
-        document.getElementById("eventTitle").innerText = localStorage.getItem("event_title") || "Tech Fest 2026";
-    </script>
-    <script src="js/register.js"></script>
     <script src="js/toast.js"></script>
+    
+    <script>
+        // 🌟 FIXED: Dynamically map all custom metadata cached from local storage state arrays
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById("eventTitle").innerText = localStorage.getItem("event_title") || "Event Details";
+            document.getElementById("eventDate").innerText = localStorage.getItem("event_date") || "No date set";
+            document.getElementById("eventLocation").innerText = localStorage.getItem("event_location") || "No location set";
+            
+            // Overwrites the default hardcoded paragraph block with your custom text
+            document.getElementById("eventDescription").innerText = localStorage.getItem("event_description") || "Join us for this exciting event!";
+        });
+    </script>
 </body>
 </html>
