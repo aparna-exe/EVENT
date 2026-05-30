@@ -15,6 +15,9 @@ class Event(db.Model):
     location = db.Column('Location', db.String(150), nullable=False)
     capacity = db.Column('Capacity', db.Integer)
     organizer_id = db.Column('Organizer_ID', db.Integer, db.ForeignKey('USER.User_ID'))
+    
+    # 🌟 FIXED: Added the Description column so your text box data can save!
+    description = db.Column('Description', db.Text, nullable=True, default='Join us for this exciting event!')
 
 class Registration(db.Model):
     __tablename__ = 'REGISTRATION'

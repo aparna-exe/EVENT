@@ -40,12 +40,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        user_id:  parseInt(userId),
-                        title:    titleInput.value,
-                        date:     dateInput.value,
-                        location: locInput.value,
-                        description: descInput ? descInput.value : '',
-                        capacity: parseInt(capInput?.value) || 100
+                        user_id:     parseInt(userId),
+                        title:       titleInput.value,
+                        date:        dateInput.value,
+                        location:    locInput.value,
+                        description: (descInput && descInput.value.trim()) ? descInput.value : 'Join us for this exciting event!',
+                        capacity:    parseInt(capInput?.value) || 100
                     })
                 });
 

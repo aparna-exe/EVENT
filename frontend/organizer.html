@@ -127,12 +127,8 @@
 
 <div class="org-layout">
 
-    <!-- ════════════════════════════════════════
-         LEFT SIDEBAR — Header + Create Form
-         ════════════════════════════════════════ -->
     <aside class="sidebar" style="background:#0B1E3F; padding: 32px 28px 40px;">
 
-        <!-- Top bar -->
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:32px;">
             <div style="display:flex; align-items:center; gap:12px;">
                 <div style="width:42px;height:42px;background:linear-gradient(135deg,#2563eb,#1e40af);border-radius:12px;display:flex;align-items:center;justify-content:center;">
@@ -148,7 +144,6 @@
             </button>
         </div>
 
-        <!-- Stats row -->
         <div style="display:flex; gap:12px; margin-bottom:28px;">
             <div class="stat-card">
                 <div style="color:#64748b;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Total Events</div>
@@ -163,7 +158,6 @@
             </div>
         </div>
 
-        <!-- Create Event Card -->
         <div style="background:white;border-radius:24px;padding:26px;">
             <div style="margin-bottom:20px;">
                 <div style="font-size:16px;font-weight:700;color:#0f172a;">Create New Event</div>
@@ -183,7 +177,7 @@
                     </div>
                     <div>
                         <label class="ep-label">Capacity</label>
-                        <input type="number" id="eventCapacity" class="ep-input" placeholder="100" min="1" max="10000">
+                        <input type="number" id="eventCapacity" class="ep-input" placeholder="100" min="10" max="10000">
                     </div>
                 </div>
 
@@ -204,9 +198,6 @@
         </div>
     </aside>
 
-    <!-- ════════════════════════════════════════
-         RIGHT PANEL — Events List
-         ════════════════════════════════════════ -->
     <section class="events-panel" style="background:#07152e;">
 
         <div style="margin-bottom:28px;">

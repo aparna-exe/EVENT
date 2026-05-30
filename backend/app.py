@@ -1,6 +1,7 @@
 import os
 import sys
 import importlib.util
+import re  # 🌟 Added for clean regex validation matches
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify, send_from_directory
 from flask_cors import CORS 
@@ -33,7 +34,7 @@ app = Flask(__name__)
 CORS(app) 
 
 app.secret_key = os.getenv('FLASK_SECRET', 'my_temporary_secret_key_123')
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__))                                                                     
 db_path = os.path.join(basedir, "..", "database", "eventpass.db")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + db_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -81,6 +82,15 @@ def signup():
 
     if not all([username, email, password]):
         return jsonify({"message": "Missing required fields"}), 400
+
+    # 🌟 NEW: Validate Email Structure (Requires @ and valid extension)
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(email_regex, email):
+        return jsonify({"message": "Invalid email format. Account creation rejected."}), 400
+
+    # 🌟 NEW: Enforce Strong Passwords (Min 8 characters, 1 letter, 1 number)
+    if len(password) < 8 or not any(c.isalpha() for c in password) or not any(c.isdigit() for c in password):
+        return jsonify({"message": "Password weak! Must be at least 8 characters long and contain both letters and numbers."}), 400
 
     if User.query.filter_by(email=email).first():
         return jsonify({"message": "Email already exists"}), 400
@@ -177,7 +187,6 @@ def create_event():
     if not data:
         return jsonify({"error": "No input parameters found"}), 400
 
-    # Accept user_id from request body (frontend uses localStorage) or fall back to session
     organizer_id = data.get('user_id') or session.get('user_id')
     if not organizer_id:
         return jsonify({"error": "Unauthorized. Please log in again."}), 401
@@ -185,19 +194,31 @@ def create_event():
     title = data.get('title')
     date = data.get('date')
     location = data.get('location')
-    capacity = data.get('capacity', 100)
+    
+    # 🌟 FIXED: Capture custom text data sent from the event creation form textarea element
+    description = data.get('description', 'Join us for this exciting event!')
+
+    # Extract capacity safely as an integer value
+    try:
+        capacity = int(data.get('capacity', 100))
+    except (ValueError, TypeError):
+        return jsonify({"error": "Capacity must be a numeric whole number."}), 400
+
+    # 🌟 NEW: Validate Minimum Capacity Boundary Constraint (Must be at least 10)
+    if capacity < 10:
+        return jsonify({"error": "Event capacity setup failed. The minimum allowed capacity threshold is 10."}), 400
 
     if not all([title, date, location]):
         return jsonify({"error": "Missing required title, date, or location values"}), 400
 
     try:
-        # 🌟 FIX: Passing the organizer_id satisfies the database NOT NULL constraint!
         new_event = Event(
             title=title,
             date=date,
             location=location,
             capacity=capacity,
-            organizer_id=organizer_id  # Matches your models.py foreign key field name
+            description=description,  # 🌟 FIXED: Commit dynamic description to data row allocation
+            organizer_id=organizer_id  
         )
         db.session.add(new_event)
         db.session.commit()
@@ -206,6 +227,7 @@ def create_event():
         db.session.rollback()
         print(f"Database insertion crash error: {e}")
         return jsonify({"error": "Failed to sync event creation: " + str(e)}), 500
+
 @app.route('/get_user_registrations/<int:user_id>', methods=['GET'])
 def get_user_registrations(user_id):
     try:
@@ -286,6 +308,73 @@ def register_event():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Failed to complete registration: " + str(e)}), 500
+
+# --- 7. EXPORT DATA ROUTE ---
+
+import csv
+from io import StringIO
+from flask import make_response
+
+@app.route('/export_attendance/<int:event_id>', methods=['GET'])
+def export_attendance(event_id):
+    try:
+        roster = db.session.query(Registration, User).join(
+            User, Registration.user_id == User.user_id
+        ).filter(Registration.event_id == event_id).all()
+        
+        si = StringIO()
+        cw = csv.writer(si)
+        
+        cw.writerow(['User ID', 'Name', 'Email', 'Registration Date', 'Attendance Status'])
+        
+        for reg, user in roster:
+            cw.writerow([
+                user.user_id,
+                user.name,
+                user.email,
+                reg.reg_date,
+                reg.attendance_status
+            ])
+        
+        output = make_response(si.getvalue())
+        output.headers["Content-Disposition"] = f"attachment; filename=attendance_event_{event_id}.csv"
+        output.headers["Content-Type"] = "text/csv"
+        
+        return output
+        
+    except Exception as e:
+        print(f"Export Error: {e}")
+        return jsonify({"error": "Failed to generate CSV export stream"}), 500
+
+# --- 8. LIVE QR CHECK-IN ATTENDANCE ROUTE ---
+
+@app.route('/mark_attendance', methods=['POST'])
+def mark_attendance():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Payload dictionary completely empty"}), 400
+
+    user_id = data.get('user_id')
+    event_id = data.get('event_id')
+
+    if not user_id or not event_id:
+        return jsonify({"error": "Missing verified tracking foreign keys"}), 400
+
+    try:
+        record = Registration.query.filter_by(user_id=user_id, event_id=event_id).first()
+        
+        if not record:
+            return jsonify({"error": "No matching user registration instance found for this event"}), 404
+        
+        record.attendance_status = "Attended"
+        db.session.commit()
+        
+        return jsonify({"message": "Attendance checked and synchronized successfully!"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print(f"SQL update execution fault: {e}")
+        return jsonify({"error": "Database error processing registration change"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
