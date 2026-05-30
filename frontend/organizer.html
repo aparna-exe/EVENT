@@ -216,6 +216,22 @@
 
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const datePicker = document.getElementById('eventDate');
+        if (datePicker) {
+            const today = new Date();
+            const year = today.getFullYear();
+            // padStart ensures single digit months/days get a leading zero ('05' instead of '5')
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            
+            const standardDateString = `${year}-${month}-${day}`;
+            datePicker.min = standardDateString;
+        }
+    });
+</script>
+
 <script src="js/toast.js"></script>
 <script src="js/organizer.js"></script>
 </body>

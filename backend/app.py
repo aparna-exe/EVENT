@@ -195,8 +195,21 @@ def create_event():
     date = data.get('date')
     location = data.get('location')
     
-    # 🌟 FIXED: Capture custom text data sent from the event creation form textarea element
+    # Capture custom text data sent from the event creation form textarea element
     description = data.get('description', 'Join us for this exciting event!')
+
+    if not all([title, date, location]):
+        return jsonify({"error": "Missing required title, date, or location values"}), 400
+
+    # 🌟 NEW: Server-Side Date Validation Check (Blocks past dates)
+    try:
+        # HTML date input sends format as 'YYYY-MM-DD'
+        input_date = datetime.strptime(date, '%Y-%m-%d').date()
+        today_date = datetime.now().date()
+        if input_date < today_date:
+            return jsonify({"error": "Event creation failed. You cannot select a past date."}), 400
+    except ValueError:
+        return jsonify({"error": "Invalid date format submitted."}), 400
 
     # Extract capacity safely as an integer value
     try:
@@ -204,12 +217,9 @@ def create_event():
     except (ValueError, TypeError):
         return jsonify({"error": "Capacity must be a numeric whole number."}), 400
 
-    # 🌟 NEW: Validate Minimum Capacity Boundary Constraint (Must be at least 10)
+    # Validate Minimum Capacity Boundary Constraint (Must be at least 10)
     if capacity < 10:
         return jsonify({"error": "Event capacity setup failed. The minimum allowed capacity threshold is 10."}), 400
-
-    if not all([title, date, location]):
-        return jsonify({"error": "Missing required title, date, or location values"}), 400
 
     try:
         new_event = Event(
@@ -217,7 +227,7 @@ def create_event():
             date=date,
             location=location,
             capacity=capacity,
-            description=description,  # 🌟 FIXED: Commit dynamic description to data row allocation
+            description=description,  
             organizer_id=organizer_id  
         )
         db.session.add(new_event)
