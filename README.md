@@ -43,7 +43,7 @@ From the root folder, initialize the database:
 Install dependencies for the QR module:
 `pip install qrcode[pil] opencv-python`
 
-⚙️ Systems Integration & API Architecture (KHADIJA SHIZA)
+## ⚙️ Systems Integration & API Architecture (KHADIJA SHIZA)
 I have engineered the backend-to-frontend bridge and resolved critical system-level bottlenecks to ensure the application components function as a single, cohesive unit.
 
 1. Integration Logic & Debugging
